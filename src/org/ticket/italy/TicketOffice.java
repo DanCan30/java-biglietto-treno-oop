@@ -1,14 +1,15 @@
 package org.ticket.italy;
 
-import java.text.DecimalFormat;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.Scanner;
 
 public class TicketOffice {
 
 	public static void main(String[] args) throws Exception {
 		
-		DecimalFormat twoDigitFormat = new DecimalFormat("0.00");
 		Scanner sc = new Scanner(System.in);
+		FileWriter writer = new FileWriter("./ticketlist.txt", true);
 		boolean valid = false;
 		
 		while(!valid) {
@@ -26,20 +27,39 @@ public class TicketOffice {
 		
 		if(flexStr.equals("y")) {
 			flex = true;
-		} else if (flexStr.equals("n")) {
-			flex = false;
 		}
 		
 		try {
 			Ticket t = new Ticket(km, age, flex);
-			System.out.println("Ticket price: " + twoDigitFormat.format(t.calculateFinalPrice()) + "€");
-			System.out.println("Flexible ticket: " + t.getFlexibleExpiration());
-			System.out.println("Current date: " + t.getDate() + " - Expiration date: " + t.getExpirationDate());
+			writer.write(t.toString());
 			valid = true;
 			
 		} catch(Exception e) {
 			System.err.println(e.getMessage());
+		} finally {
+			writer.close();
 		}
 	} sc.close();
+	
+	Scanner fileSc = null;
+	
+	try {
+
+		File file = new File("./ticketlist.txt");
+		
+		fileSc = new Scanner(file);
+		
+		while (fileSc.hasNextLine()) {
+			String line = fileSc.nextLine();
+			System.out.println(line);
+		} 
+	} catch (Exception e){
+		
+		System.err.println(e.getMessage());
+	} finally {
+		
+		fileSc.close();		
+	}
+	
 }
 }

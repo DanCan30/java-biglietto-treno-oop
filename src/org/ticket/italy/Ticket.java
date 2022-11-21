@@ -95,34 +95,42 @@ public class Ticket {
 		
 		double finalPrice = this.km * calculateDiscount(this.age);
 		
-		if(this.flexibleExpiration) {
-			finalPrice = finalPrice + (finalPrice * .1);
-		}
+
 		return finalPrice;
 	}
 	
 	private double calculateDiscount(int age) {
 		
-		BigDecimal fixedCost = new BigDecimal(0);
+		BigDecimal fixedCostBD = new BigDecimal(0);
 		
 		if(age >= 65) {
-			fixedCost = Ticket.COST_PER_KM.subtract(Ticket.COST_PER_KM.multiply(Ticket.OVER_65_DISCOUNT));
+			fixedCostBD = Ticket.COST_PER_KM.subtract(Ticket.COST_PER_KM.multiply(Ticket.OVER_65_DISCOUNT));
 		} else if(age <= 18) {
-			fixedCost = Ticket.COST_PER_KM.subtract(Ticket.COST_PER_KM.multiply(Ticket.UNDER_18_DISCOUNT));
+			fixedCostBD = Ticket.COST_PER_KM.subtract(Ticket.COST_PER_KM.multiply(Ticket.UNDER_18_DISCOUNT));
 		} else {
-			fixedCost = Ticket.COST_PER_KM;
+			fixedCostBD = Ticket.COST_PER_KM;
 		}
 		
-		return fixedCost.doubleValue();
+		double fixedCost = fixedCostBD.doubleValue();
+		
+		if(this.flexibleExpiration) {
+			fixedCost = fixedCost + (fixedCost * .1);
+		}
+		
+		return fixedCost;
 	}
 	
 	
 	@Override
 	public String toString() {
-		return "Age: " + getAge()
+		return "---------------" + 
+		"\nAge: " + getAge()
 		+ "\nKm: " + getKm()
-		+ " Km\nCost per km: " + twoDigitFormat.format(calculateDiscount(getAge()))
-		+ "€ \nTotal cost: " + twoDigitFormat.format(calculateFinalPrice()) + "€";
+		+ " Km\nFlexible ticket: " + (flexibleExpiration ? "Yes (+10% on the price)" : "No")
+		+ "\nCost per km: " + twoDigitFormat.format(calculateDiscount(getAge()))
+		+ "€ \nTotal cost: " + twoDigitFormat.format(calculateFinalPrice())
+		+ "€ \nCurrent date: " + getDate() + " - Expiration date: " + getExpirationDate()
+		+ "\n---------------";
 	}
 
 }
