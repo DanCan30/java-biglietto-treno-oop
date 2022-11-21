@@ -2,6 +2,7 @@ package org.ticket.italy;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.time.LocalDate;
 
 public class Ticket {
 	
@@ -10,13 +11,21 @@ public class Ticket {
 	private static final BigDecimal COST_PER_KM = new BigDecimal(0.21); 
 	private static final BigDecimal OVER_65_DISCOUNT = new BigDecimal(0.40);
 	private static final BigDecimal UNDER_18_DISCOUNT = new BigDecimal(0.20);
+	private static final int NORMAL_EXPIRATION_DATE = 30;
+	private static final int FLEXIBLE_EXPIRATION_DATE = 90;
 
 	private int km;
 	private int age;
+	private LocalDate date;
+	private boolean flexibleExpiration;
+	private LocalDate expirationDate;
 	
-	public Ticket(int km, int age) throws Exception {
+	public Ticket(int km, int age, boolean flexibleExpiration) throws Exception {
 		setKm(km);
 		setAge(age);
+		setDate();
+		setFlexibleExpiration(flexibleExpiration);
+		setExpirationDate(flexibleExpiration);
 	}
 	
 //	Getters and setters
@@ -34,6 +43,35 @@ public class Ticket {
 	
 	public void setAge(int age) throws Exception {
 		isValidAge(age);
+	}
+	
+	public LocalDate getDate() {
+		return this.date;
+	}
+	
+	public void setDate() {
+		this.date = LocalDate.now();
+	}
+	
+	public boolean getFlexibleExpiration() {
+		return this.flexibleExpiration;
+	}
+	
+	public void setFlexibleExpiration(boolean flexibleExpiration) {
+		this.flexibleExpiration = flexibleExpiration;
+	}
+	
+	public LocalDate getExpirationDate() {
+		return this.expirationDate;
+	}
+	
+	public void setExpirationDate(boolean flexibleExpiration) {
+		
+		if (flexibleExpiration) {
+			this.expirationDate = this.date.plusDays(FLEXIBLE_EXPIRATION_DATE);
+		} else {
+			this.expirationDate = this.date.plusDays(NORMAL_EXPIRATION_DATE);
+		}
 	}
 	
 //	------------------------
@@ -56,6 +94,10 @@ public class Ticket {
 	public double calculateFinalPrice() {
 		
 		double finalPrice = this.km * calculateDiscount(this.age);
+		
+		if(this.flexibleExpiration) {
+			finalPrice = finalPrice + (finalPrice * .1);
+		}
 		return finalPrice;
 	}
 	
@@ -73,6 +115,7 @@ public class Ticket {
 		
 		return fixedCost.doubleValue();
 	}
+	
 	
 	@Override
 	public String toString() {
