@@ -2,14 +2,23 @@ package org.ticket.italy;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class TicketOffice {
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		
 		Scanner sc = new Scanner(System.in);
-		FileWriter writer = new FileWriter("./ticketlist.txt", true);
+		FileWriter writer = null;
+		
+		try {
+			
+		writer = new FileWriter("./ticketlist.txt", true);
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+		};
+		
 		boolean valid = false;
 		
 		while(!valid) {
@@ -37,7 +46,11 @@ public class TicketOffice {
 		} catch(Exception e) {
 			System.err.println(e.getMessage());
 		} finally {
-			writer.close();
+			try {
+				writer.close();
+			} catch (IOException e) {
+				System.err.println(e.getMessage());
+			}
 		}
 	} sc.close();
 	
